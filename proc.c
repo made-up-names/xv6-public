@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority=60;
 
   release(&ptable.lock);
 
@@ -112,6 +113,11 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+
+  p->stime=ticks;
+  p->etime=0;
+  p->rtime=0;
+  p->iotime=0;
   return p;
 }
 
@@ -263,6 +269,7 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
+  curproc->etime= ticks;
   sched();
   panic("zombie exit");
 }
@@ -311,6 +318,51 @@ wait(void)
   }
 }
 
+int waitx(int* turn,int* wait,int* run)
+{
+  struct proc *p;
+  int havekids, pid;
+  struct proc *curproc = myproc();
+  
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for exited children.
+    havekids = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->parent != curproc)
+        continue;
+      havekids = 1;
+      if(p->state == ZOMBIE){
+        // Found one.
+        *wait = p->etime - p->stime - p->rtime - p->iotime;
+        *run = p->rtime;
+        *turn= p->etime -p->stime;
+
+        
+        pid = p->pid;
+        kfree(p->kstack);
+        p->kstack = 0;
+        freevm(p->pgdir);
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
+        release(&ptable.lock);
+        return pid;
+      }
+    }
+
+    // No point waiting if we don't have any children.
+    if(!havekids || curproc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
+
+    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
+    sleep(curproc, &ptable.lock);  //DOC: wait-sleep
+  }
+}
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -330,24 +382,41 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
+    struct proc *newp;
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
 
+      //out of all runnable processes chose the process with highest priority
+      newp = p;
+      for (struct proc* p1 = ptable.proc; p1 < &ptable.proc[NPROC]; ++p1) {
+        if(p1->state != RUNNABLE)
+          continue;
+        if (newp->priority < p1->priority)
+          newp = p1;
+      }
+      p = newp;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      //p->nameindex=0; p->retindex=0;
       c->proc = p;
-      switchuvm(p);
+      switchuvm(p); 
       p->state = RUNNING;
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
+      // print p->namearray p->retarray ; 
+      //p->nameindex=0; p->retindex=0;
+
+
+
       // Process is done running for now.
       // It should have changed its p->state before coming back.
+      
       c->proc = 0;
     }
     release(&ptable.lock);
@@ -531,4 +600,51 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+//ps
+int cps(void)
+{
+  struct proc *p;
+
+  // Enable interrupts on this processor.
+  sti();
+
+  // Loop over process table looking for process with pid.
+  acquire(&ptable.lock);
+  cprintf("name \t pid \t state \t \t priority \n");
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; ++p) {
+    if (p->state == SLEEPING)
+      cprintf("%s \t %d  \t SLEEPING \t %d\n", p->name, p->pid, p->priority);
+    else if ( p->state == RUNNING)
+      cprintf("%s \t %d  \t RUNNING \t %d\n", p->name, p->pid, p->priority);
+    else if ( p->state == RUNNABLE)
+      cprintf("%s \t %d  \t RUNNABLE \t %d\n", p->name, p->pid, p->priority);
+  }
+
+  release(&ptable.lock);
+
+  return 0;
+
+}
+// change priority
+int set_priority(int pid, int priority)
+{
+  struct proc *p;
+  int ret = -1;
+  cprintf("in syscall pid=%d",pid);
+  acquire(&ptable.lock);
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; ++p)
+  {
+    if (p->pid == pid)
+    {
+      ret = p->priority;
+      cprintf("Previous priority of\t PID %d is %d\n",pid,ret);
+      p->priority = priority;
+      cprintf("Current priority of\t PID %d is %d\n",pid,priority);
+      break;
+    }
+  }
+  release(&ptable.lock);
+
+  return ret;
 }
