@@ -13,6 +13,32 @@ sys_fork(void)
   return fork();
 }
 
+int sys_cps(void)
+{
+  return cps();
+}
+
+int sys_set_priority(void)
+{
+  int pid,priority;
+  if(argint(0,&pid)<0)
+    return -1;
+  if(argint(1,&priority)<0)
+    return -1;
+  return set_priority(pid,priority);
+}
+int sys_waitx(void)
+{
+  int *turn,*wait,*run;
+  if(argptr(0,(char**)&turn,sizeof(int))<0)
+    return -1;
+  if(argptr(1,(char**)&wait,sizeof(int))<0)
+    return -1;
+  if(argptr(2,(char**) &run,sizeof(int))<0)
+    return -1;
+  return waitx(turn,wait,run);
+}
+
 int
 sys_exit(void)
 {
