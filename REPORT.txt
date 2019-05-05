@@ -1,0 +1,16 @@
+
+** Priority Based Scheduler[60,50,40,30] : 
+(Not a proper measure since cache)
+
+processes sent in the order of priorities 60,50,40,30 
+waiting times : 14 [30],1481[40],1458[50],2978[60]
+run times: 1443,1,1470,2
+
+Average Turnaround Time= 2211.75
+
+** Round Robin Scheduler [60,60,60,60]: 
+
+waiting times: 1096,1112,2570,1121
+run times:362,373,375,1829
+Average Turnaround Time = 2209.5
+

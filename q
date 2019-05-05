@@ -1,4 +1,40 @@
-[33mcommit b818915f793cd20c5d1e24f668534a9d690f3cc8[m[33m ([m[1;36mHEAD -> [m[1;32mcustomised_shreya[m[33m, [m[1;33mtag: xv6-rev11[m[33m)[m
+[33mcommit 63816c404fcf83de8d7f38fd13cd3614f6bbc2f3[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: made-up-names <shreya.reddy@students.iiit.ac.in>
+Date:   Fri May 3 23:13:17 2019 +0530
+
+    Added new README and report
+
+[33mcommit f1857221a3734c1c0e50fa9ba0e624a719301432[m
+Author: made-up-names <shreya.reddy@students.iiit.ac.in>
+Date:   Fri May 3 11:29:20 2019 +0530
+
+    Final customized
+
+[33mcommit 82cab880089401d9787182f393cb0846df03cb35[m
+Author: made-up-names <shreya.reddy@students.iiit.ac.in>
+Date:   Thu May 2 20:13:35 2019 +0530
+
+    Final Makefile
+
+[33mcommit 45f18b8fc5c1b8f7cc978cffa15921d6107df85a[m
+Author: made-up-names <shreya.reddy@students.iiit.ac.in>
+Date:   Sat Apr 27 13:45:25 2019 +0530
+
+    Priority Scheduling -2 and system call tracing
+
+[33mcommit 7c264eec5946d1ca0a2696bd158120defaff7d34[m
+Author: made-up-names <shreya.reddy@students.iiit.ac.in>
+Date:   Thu Apr 25 09:17:54 2019 +0530
+
+    Priority Scheduling - 1
+
+[33mcommit 289081f0495fa852b76c186738c69eb7c0ade351[m
+Author: made-up-names <shreya.reddy@students.iiit.ac.in>
+Date:   Tue Apr 23 16:02:47 2019 +0530
+
+    Custom Invertcase command
+
+[33mcommit b818915f793cd20c5d1e24f668534a9d690f3cc8[m[33m ([m[1;33mtag: xv6-rev11[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
 Author: Frans Kaashoek <kaashoek@mit.edu>
 Date:   Sun Sep 2 08:33:55 2018 -0400
 
@@ -2941,14 +2977,14 @@ Date:   Sat Jul 11 19:15:32 2009 -0700
 
     bootasm cleanup
 
-[33mcommit 8b75366ce4ae7ad5f77225b247d097955574ba0b[m
+[33mcommit 8b75366ce4ae7ad5f77225b247d097955574ba0b[m[33m ([m[1;33mtag: master[m[33m)[m
 Author: Russ Cox <rsc@swtch.com>
 Date:   Sat Jul 11 18:17:32 2009 -0700
 
     s/IRQ_OFFSET/T_IRQ0/: it's a trap number, not an irq number.
     move the SYSCALL number up, so does not overlap the IRQ traps.
 
-[33mcommit 27ff8f0e6f56e5f84688bcd41a7b4018b4e61173[m
+[33mcommit 27ff8f0e6f56e5f84688bcd41a7b4018b4e61173[m[33m ([m[1;33mtag: origin[m[33m)[m
 Author: rsc <rsc>
 Date:   Sun May 31 05:13:51 2009 +0000
 
